@@ -18,34 +18,36 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Accept Android Licenses
+        run: yes | sdkmanager --licenses || true
+
       - name: Install dependencies
         run: |
-          npm install
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install --legacy-peer-deps || npm install
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest --save
 
       - name: Build Web Assets
         run: |
-          npm run build || mkdir -p dist && cp -r src/* dist/ || true
+          npm run build || (mkdir -p dist && cp -r src/* dist/) || true
 
-      - name: Initialize Capacitor
+      - name: Prepare Capacitor Android
         run: |
           npx cap init "Piano Virtual" "com.piano.app" --web-dir dist || true
-          npx cap add android || true
-          npx cap sync android || true
+          rm -rf android
+          npx cap add android
+          npx cap sync android
 
       - name: Build APK with Gradle
         run: |
-          if [ -d "android" ]; then
-            cd android
-            chmod +x gradlew
-            ./gradlew assembleDebug
-          fi
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
