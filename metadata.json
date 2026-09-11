@@ -1,0 +1,6 @@
+{
+  "name": "Piano Virtual com Partitura & IA",
+  "description": "Piano virtual com síntese sonora realista, editor de partitura interativo completo e geração de partituras por IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
